@@ -28,11 +28,25 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.gameWrapper {
+  position: absolute;
+  top: 50vh;
+  left: 50vw;
+  transform: translate(-50%, -50%);
+}
+
+.rowHint {
+  display: inline-flex;
+
+}
+
+.colHint {
+  display: inline-flex;
+  padding-left: .1em;
+  padding-right: 1em;
+  word-break: break-word;
+  width: 5px;
+  border-left-style: solid;
+  border-left-width: .1em;
+
 }
