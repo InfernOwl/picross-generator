@@ -277,7 +277,7 @@ class Game extends React.Component {
         return (
             <div className="gameWrapper">
                 <p>Grid Size: </p>
-                <select value={this.state.rows} onChange={(e) => this.rowsUpdate(e)} placeholder={this.state.rows}>
+                Rows <select value={this.state.rows} onChange={(e) => this.rowsUpdate(e)} placeholder={this.state.rows}>
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
@@ -298,7 +298,7 @@ class Game extends React.Component {
                     <option value="20">20</option>
                 </select>
                  X 
-                <select value={this.state.cols} onChange={(e) => this.colsUpdate(e)} placeholder={this.state.cols}>
+                Cols<select value={this.state.cols} onChange={(e) => this.colsUpdate(e)} placeholder={this.state.cols}>
                     <option value="3">3</option>
                     <option value="4">4</option>
                     <option value="5">5</option>
@@ -320,8 +320,6 @@ class Game extends React.Component {
                 </select>
 
                 <button  onClick={() => this.createBoard(this.state.rows, this.state.cols)}> Create Board </button>
-                <button onClick={() => this.getAnswer()}>Answer</button>
-                <button onClick={() => this.getClicked()}>Clicked</button>
                 <div className="gameField" id="gameField">
                     <div className="columnHint">
                         {
