@@ -23,7 +23,7 @@ class Game extends React.Component {
 
     createBoard (rows, cols) {
 
-        // Hard reset of all parameters
+        // Hard reset of all parameters on board creation
         this.setState({
             levelBeaten: false,
             gameBoard: [],
@@ -62,16 +62,16 @@ class Game extends React.Component {
         }
 
         // Create a reversed board for the column hints
-        for (var y=1; y <= cols; y++) {
+        for (var t=1; t <= cols; t++) {
 
-            var element = [];
-            for (var x=1; x <= rows; x++) {
-                    element.push({x: x, y: y, num: i});
+            var colElement = [];
+            for (var u=1; u <= rows; u++) {
+                    colElement.push({x: u, y: t, num: i});
                     imgHold.push( 'empty' );
                     i++;
             }
 
-            eCol.push({row: element});
+            eCol.push({row: colElement});
             
         }
 
@@ -95,6 +95,7 @@ class Game extends React.Component {
     colsUpdate(e) {
             this.setState({cols: e.target.value});
     }
+
     rowCheck(val, rows, cols) {
         for (var i=1; i <= rows; i++) {
             if (val <= cols*i) {
@@ -111,6 +112,9 @@ class Game extends React.Component {
         }
     }
 
+    // Loop through the grid and at each square randomly decide if cell should be filled or empty
+    // TODO - Figure out a better random seed algorithm. Possibly a difficulty modifier.
+    //      - Add check to ensure a set minimum of squares get filled.
     setFilled(rows, cols) {
 
         var totalCount = rows * cols;
@@ -148,14 +152,11 @@ class Game extends React.Component {
                 for (var k=0; k < filledArr.length; k++) {
                     
                     if (i === filledArr[k].x && j === filledArr[k].y) {
-                        console.log(i+", "+j+" && "+filledArr[k].x+", "+filledArr[k].y);
                         found = true;
                         count++;
                     }
                 }
-                
-                console.log("J: " + j + ", Cols: " + cols + ", Count: " + count + ", Found: " + found);
-                console.log(j == cols);
+
                 if (!found || j == cols) {
                     if (count > 0) {
                         hint = hint + count;
@@ -172,8 +173,6 @@ class Game extends React.Component {
             hintArr.push(hint);
         }
 
-        console.log("Rows");
-        console.log(hintArr);
         this.setState({rowHints: hintArr});
 
         // Set colHints second
@@ -210,8 +209,6 @@ class Game extends React.Component {
             hintArr.push(hint);
         }
 
-        console.log("Cols");
-        console.log(hintArr);
         this.setState({colHints: hintArr});
     }
 
@@ -242,6 +239,36 @@ class Game extends React.Component {
         }, 500);
     }
 
+    setXMark(row, col, num, element) {
+
+        var newSelected = this.state.selectedSquares.sort();
+        var emptySelected = [];
+
+        // If square is not already selected, change image to show that it is and add it to the selected list.
+        // If square is already selected, change image to show it isn't now, and remove it from the selected list.
+        if (this.state.imageTrack[num-1] === 'empty') {
+            this.setState({imageTrack: this.state.imageTrack.fill('X', num-1, num)});
+        } else if (this.state.imageTrack[num-1] === 'filled') {
+            this.setState({imageTrack: this.state.imageTrack.fill('X', num-1, num)});
+            newSelected.forEach(s => {
+                if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
+                    emptySelected.push(s);
+                }
+            });
+
+            this.setState({selectedSquares: emptySelected});
+        } else {
+            this.setState({imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
+        }
+
+        element.preventDefault();
+        setTimeout(() => {
+            this.checkSolve();
+        }, 500);
+    }
+
+    // Check after each cell fill/unfill to see if the squares the user has selected match
+    // the cells in the filledSquares array in this.state
     checkSolve() {
         var solved = true;
 
@@ -266,7 +293,6 @@ class Game extends React.Component {
 
     getAnswer() {
         console.log(this.state.gameBoard);
-        console.log(this.state.revGameBoard);
     }
 
     getClicked() {
@@ -319,7 +345,7 @@ class Game extends React.Component {
                     <option value="20">20</option>
                 </select>
 
-                <button  onClick={() => this.createBoard(this.state.rows, this.state.cols)}> Create Board </button>
+                <button onClick={() => this.createBoard(this.state.rows, this.state.cols)}> Create Board </button>
                 <div className="gameField" id="gameField">
                     <div className="columnHint">
                         {
@@ -333,7 +359,7 @@ class Game extends React.Component {
                             <div className="row">
                                 {
                                     fubar.row.map((item, num) => (
-                                        <Square image={this.state.imageTrack[item.num-1]} onClick={() => this.setSelected(item.x, item.y, item.num)}></Square>
+                                        <Square image={this.state.imageTrack[item.num-1]} onClick={() => this.setSelected(item.x, item.y, item.num)} onContextMenu={(e) => this.setXMark(item.x, item.y, item.num, e)} ></Square>
                                     ))
                                 }
                                 <div className="rowHint" >{this.state.rowHints[key]}</div>
