@@ -24,7 +24,7 @@ class Square extends React.Component {
 
     render() {
         return(
-            <img src={this.imageSelect(this.props.image)} alt='' className="Test" onClick={(e) => this.props.onClick(e)} onContextMenu={(e) => this.props.onContextMenu(e)}></img>
+            <img draggable="false" src={this.imageSelect(this.props.image)} alt='' className="Test" xpos={this.props.xpos} ypos={this.props.ypos} sqnum={this.props.sqnum} onMouseDown={(e) => this.props.onMouseDown(e)} onContextMenu={(e) => this.props.onContextMenu(e)}></img>
         );
         }
 }
