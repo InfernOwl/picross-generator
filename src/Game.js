@@ -270,7 +270,6 @@ class Game extends React.Component {
         switch (mouseState) {
             case 1: 
                 this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
-                console.log(e.target.attributes);
                 break;
             case 2:
                 this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
@@ -281,6 +280,22 @@ class Game extends React.Component {
 
     }
 
+    mouseEntry(e) {
+        console.log("Made it into mouseEntry");
+        switch (this.state.fillStyle) {
+            case "solid": 
+                this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                this.setState({fillStyle: "solid"});
+                break;
+            case "x":
+                this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                this.setState({fillStyle: "x"});
+                break;
+            default:
+                break;
+        }
+    }
+
     setSelected(row, col, num) {
 
         var newSelected = this.state.selectedSquares.sort();
@@ -289,11 +304,15 @@ class Game extends React.Component {
         // If square is not already selected, change image to show that it is and add it to the selected list.
         // If square is already selected, change image to show it isn't now, and remove it from the selected list.
         if (this.state.imageTrack[num-1] === 'empty') {
-            this.setState({imageTrack: this.state.imageTrack.fill('filled', num-1, num)});
+            this.setState({
+                imageTrack: this.state.imageTrack.fill('filled', num-1, num),
+                fillStyle: "solid"});
             newSelected.push({x:row, y:col});
             this.setState({selectedSquares: newSelected});
         } else {
-            this.setState({imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
+            this.setState({
+                imageTrack: this.state.imageTrack.fill('empty', num-1, num),
+                fillStyle: "blank"});
             newSelected.forEach(s => {
                 if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
                     emptySelected.push(s);
@@ -315,9 +334,13 @@ class Game extends React.Component {
         // If square is not already selected, change image to show that it is and add it to the selected list.
         // If square is already selected, change image to show it isn't now, and remove it from the selected list.
         if (this.state.imageTrack[num-1] === 'empty') {
-            this.setState({imageTrack: this.state.imageTrack.fill('X', num-1, num)});
+            this.setState({
+                imageTrack: this.state.imageTrack.fill('X', num-1, num),
+                fillStyle: "x"});
         } else if (this.state.imageTrack[num-1] === 'filled') {
-            this.setState({imageTrack: this.state.imageTrack.fill('X', num-1, num)});
+            this.setState({
+                imageTrack: this.state.imageTrack.fill('X', num-1, num),
+                fillStyle: "blank"});
             newSelected.forEach(s => {
                 if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
                     emptySelected.push(s);
@@ -341,7 +364,7 @@ class Game extends React.Component {
     }
     mouseUp(e) {
         e.preventDefault();
-        this.setState({mouseDown: false});
+        this.setState({mouseDown: false, fillStyle: "blank"});
     }
     prevDef(e) {
         // Helper function specifically to prevent default right click action
@@ -390,7 +413,7 @@ class Game extends React.Component {
 
     render() {
         return (
-            <div className="gameWrapper">
+            <div className="gameWrapper"  onMouseUp={(e) => this.mouseUp(e)}>
                 <p>Grid Size: </p>
                 <input size="10" placeholder="Row Amount" value={this.state.rows} onChange={(e) => this.rowsUpdate(e)}></input>
                  X 
@@ -410,7 +433,7 @@ class Game extends React.Component {
                             <div className="row" key={key}>
                                 {
                                     fubar.row.map((item, num) => (
-                                        <Square key={num} image={this.state.imageTrack[item.num-1]} xpos={item.x} ypos={item.y} sqnum={item.num} onMouseDown={(e) => this.fillSelection(e)} onContextMenu={(e) => this.prevDef(e)}></Square>
+                                        <Square key={num} image={this.state.imageTrack[item.num-1]} xpos={item.x} ypos={item.y} sqnum={item.num} onMouseDown={(e) => this.fillSelection(e)} onContextMenu={(e) => this.prevDef(e)} onMouseEnter={(e) => this.mouseEntry(e)}></Square>
                                     ))
                                 }
                                 <div className="rowHint" >{this.state.rowHints[key]}</div>
