@@ -23,14 +23,21 @@
 }
 
 .gameWrapper {
-  position: absolute;
-  top: 50vh;
-  left: 50vw;
-  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 100%;
+  padding-left: 30%;;
+}
+.row {
+  width: 50%;
+}
+
+.columnHint {
+  padding-left: 5%;
 }
 
 .rowHint {
   display: inline-flex;
+  min-width: 10%;
 
 }
 

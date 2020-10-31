@@ -431,12 +431,13 @@ class Game extends React.Component {
                     {
                         this.state.gameBoard.map((fubar, key) =>(
                             <div className="row" key={key}>
+                                <div className="rowHint" >{this.state.rowHints[key]}</div>
                                 {
                                     fubar.row.map((item, num) => (
                                         <Square key={num} image={this.state.imageTrack[item.num-1]} xpos={item.x} ypos={item.y} sqnum={item.num} onMouseDown={(e) => this.fillSelection(e)} onContextMenu={(e) => this.prevDef(e)} onMouseEnter={(e) => this.mouseEntry(e)}></Square>
                                     ))
                                 }
-                                <div className="rowHint" >{this.state.rowHints[key]}</div>
+                                
                             </div>
                         ))
                     }
