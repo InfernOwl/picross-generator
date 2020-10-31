@@ -7,21 +7,28 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            levelBeaten: false,
-            rows: 3,
-            cols: 3,
-            gameBoard: [],
-            revGameBoard: [],
-            imageTrack: [],
-            colHints: [],
-            rowHints: [],
-            filledSquares: [],
-            selectedSquares: [],
-            chance: 50,
+            levelBeaten: false, // boolean to check if level is solved
+            rows: "", // Number of rows in grid
+            cols: "", // Number of columns in grid
+            gameBoard: [], // Game Board Array
+            revGameBoard: [], // Reverse game board???
+            imageTrack: [], // Image tracking dictionary to decide what square should be filled/X'd/empty
+            colHints: [], // Array of column hints
+            rowHints: [], // Array of Row Hints
+            filledSquares: [], // Array of squares needed to be filled
+            selectedSquares: [], // Array of squares the player has filled
+            chance: 50, // Random chance seed TODO: Figure out a better way to randomly choose squares
+            mouseDown: false, // Boolean to track mouse state
+            fillStyle: "blank", // Track fill style for square entry
         };
     }
 
     createBoard (rows, cols) {
+
+        // Fail if Rows or Columns are not valid
+        if (!this.validNumber(rows) || !this.validNumber(cols)) {
+            return false;
+        }
 
         // Hard reset of all parameters on board creation
         this.setState({
@@ -34,6 +41,8 @@ class Game extends React.Component {
             filledSquares: [],
             selectedSquares: [],
             chance: 50,
+            mouseDown: false,
+            fillStyle: "blank",
         });
 
         this.rowsUpdate = this.rowsUpdate.bind(this);
@@ -80,7 +89,7 @@ class Game extends React.Component {
 
         // Set hint values
         setTimeout(() => {
-            this.setHints(this.state.gameBoard, this.state.filledSquares, rows, cols)
+            this.setHints(this.state.filledSquares, rows, cols);
         }, 1000);
 
 
@@ -88,12 +97,27 @@ class Game extends React.Component {
         this.setState({gameBoard: eRow, revGameBoard: eCol, imageTrack: imgHold});
     }
 
+    validNumber(num) {
+        var regex = new RegExp("^$|[-+]?[1-9]\\d*");
+        var valid = false;
+        
+        if (regex.test(num) && parseInt(num) <= 20) {
+            valid = true;
+        }
+
+        return valid;
+    }
+
     rowsUpdate(e) {
-            this.setState({rows: e.target.value});
+        if (this.validNumber(e.target.value.toString())) {
+            this.setState({rows: e.target.value.toString()});
+        }
     }
 
     colsUpdate(e) {
+        if (this.validNumber(e.target.value)) {
             this.setState({cols: e.target.value});
+        }
     }
 
     rowCheck(val, rows, cols) {
@@ -131,8 +155,14 @@ class Game extends React.Component {
         this.setState({filledSquares: filledSquares});
     }
 
-    setHints(gameBoard, filledArr, rows, cols) {
-        // Iterate through filledArr and create colHint array and rowHint array to pass to state
+
+    // Takes the passed Array (arr), loops through the rows x cols grid and checks to see if
+    // the cartesian point is present in arr.
+    // If so, the count is increased and the next point is checked.
+    // Count is added to the hint array if a break is found or the end of the row is found.
+    //
+    // Returns the array of rowHints
+    setRowHints(arr, rows, cols) {
         var hint = "";
         var hintArr = [];
         var count = 0;
@@ -149,9 +179,9 @@ class Game extends React.Component {
             for (var j=1; j <= cols; j++) {
                 found = false;
 
-                for (var k=0; k < filledArr.length; k++) {
+                for (var k=0; k < arr.length; k++) {
                     
-                    if (i === filledArr[k].x && j === filledArr[k].y) {
+                    if (i === arr[k].x && j === arr[k].y) {
                         found = true;
                         count++;
                     }
@@ -173,7 +203,20 @@ class Game extends React.Component {
             hintArr.push(hint);
         }
 
-        this.setState({rowHints: hintArr});
+        return hintArr;
+    }
+
+    // Takes the passed Array (arr), loops through the rows x cols grid and checks to see if
+    // the cartesian point is present in arr.
+    // If so, the count is increased and the next point is checked.
+    // Count is added to the hint array if a break is found or the end of the col is found.
+    //
+    // Returns the array of colHints
+    setColHints(arr, rows, cols) {
+        var hint = "";
+        var hintArr = [];
+        var count = 0;
+        var found = false;
 
         // Set colHints second
         for (var j=1; j <= cols; j++) {
@@ -186,8 +229,8 @@ class Game extends React.Component {
             for (var i=1; i <= rows; i++) {
                 found = false;
 
-                for (var k=0; k < filledArr.length; k++) {
-                    if (i === filledArr[k].x && j === filledArr[k].y) {
+                for (var k=0; k < arr.length; k++) {
+                    if (i === arr[k].x && j === arr[k].y) {
                         found = true;
                         count++;
                     }
@@ -209,62 +252,142 @@ class Game extends React.Component {
             hintArr.push(hint);
         }
 
-        this.setState({colHints: hintArr});
+        return hintArr;
+    }
+
+    setHints(filledArr, rows, cols) {
+        // Iterate through filledArr and create colHint array and rowHint array to pass to state
+        this.setState({rowHints: this.setRowHints(filledArr, rows, cols)});
+
+        this.setState({colHints: this.setColHints(filledArr, rows, cols)});
+        
+    }
+
+    fillSelection(e) {
+        // Decide what is done when a square is clicked based on what mouse button was pressed
+        // Then set fillstyle to be used for drag selection while mouse button remains down
+        var mouseState = e.buttons;
+        this.mouseDown(e);
+
+        switch (mouseState) {
+            case 1:
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty') {
+                    this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "fill"});
+                } else {
+                    this.setEmpty(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "empty"});
+                }
+                break;
+            case 2:
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty') {
+                    this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "x"});
+                } else {
+                    this.setEmpty(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "empty"});
+                }
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    mouseEntry(e) {
+        // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
+        switch (this.state.fillStyle) {
+            case "fill": 
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty' || this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'X') {
+                    this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                }
+                break;
+            case "x":
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty') {
+                    this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                }
+                break;
+            case "empty":
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'filled' || this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'X') {
+                    this.setEmpty(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     setSelected(row, col, num) {
-
         var newSelected = this.state.selectedSquares.sort();
         var emptySelected = [];
 
-        // If square is not already selected, change image to show that it is and add it to the selected list.
-        // If square is already selected, change image to show it isn't now, and remove it from the selected list.
-        if (this.state.imageTrack[num-1] === 'empty') {
-            this.setState({imageTrack: this.state.imageTrack.fill('filled', num-1, num)});
-            newSelected.push({x:row, y:col});
-            this.setState({selectedSquares: newSelected});
-        } else {
-            this.setState({imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
-            newSelected.forEach(s => {
-                if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
-                    emptySelected.push(s);
-                }
-            });
-
-            this.setState({selectedSquares: emptySelected});
-        }
+        // Fill current square
+        // Check to see if filling square solved the puzzle
+        this.setState({
+            imageTrack: this.state.imageTrack.fill('filled', num-1, num)});
+        newSelected.push({x:row, y:col});
+        this.setState({selectedSquares: newSelected});
 
         setTimeout(() => {
             this.checkSolve();
         }, 500);
     }
 
-    setXMark(row, col, num, element) {
+    setXMark(row, col, num) {
+        var newSelected = this.state.selectedSquares.sort();
+        var emptySelected = [];
+
+        // Fill current square with X
+        this.setState({
+            imageTrack: this.state.imageTrack.fill('X', num-1, num)});
+        newSelected.forEach(s => {
+            if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
+                emptySelected.push(s);
+            }
+        });
+
+        this.setState({selectedSquares: emptySelected});
+    }
+
+    setEmpty(row, col, num) {
 
         var newSelected = this.state.selectedSquares.sort();
         var emptySelected = [];
 
-        // If square is not already selected, change image to show that it is and add it to the selected list.
-        // If square is already selected, change image to show it isn't now, and remove it from the selected list.
-        if (this.state.imageTrack[num-1] === 'empty') {
-            this.setState({imageTrack: this.state.imageTrack.fill('X', num-1, num)});
-        } else if (this.state.imageTrack[num-1] === 'filled') {
-            this.setState({imageTrack: this.state.imageTrack.fill('X', num-1, num)});
-            newSelected.forEach(s => {
-                if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
-                    emptySelected.push(s);
-                }
-            });
+        // Remove entry in current square
+        // Check to see if removing square solved the puzzle
+        this.setState({
+            imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
+            
+        newSelected.forEach(s => {
+            if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
+                emptySelected.push(s);
+            }
+        });
 
-            this.setState({selectedSquares: emptySelected});
-        } else {
-            this.setState({imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
-        }
-
-        element.preventDefault();
+        this.setState({selectedSquares: emptySelected});
+    
         setTimeout(() => {
             this.checkSolve();
         }, 500);
+
+    }
+
+    // Code to change the state of mouse position
+    mouseDown(e) {
+        e.preventDefault();
+        this.setState({mouseDown: true});
+    }
+
+    mouseUp(e) {
+        e.preventDefault();
+        this.setState({mouseDown: false, fillStyle: "blank"});
+    }
+
+    prevDef(e) {
+        // Helper function specifically to prevent default right click action
+        // We'll clean it up later
+        e.preventDefault();
     }
 
     // Check after each cell fill/unfill to see if the squares the user has selected match
@@ -301,68 +424,31 @@ class Game extends React.Component {
 
     render() {
         return (
-            <div className="gameWrapper">
+            <div className="gameWrapper"  onMouseUp={(e) => this.mouseUp(e)}>
                 <p>Grid Size: </p>
-                Rows <select value={this.state.rows} onChange={(e) => this.rowsUpdate(e)} placeholder={this.state.rows}>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                </select>
+                <input size="10" placeholder="Row Amount" value={this.state.rows} onChange={(e) => this.rowsUpdate(e)}></input>
                  X 
-                Cols<select value={this.state.cols} onChange={(e) => this.colsUpdate(e)} placeholder={this.state.cols}>
-                    <option value="3">3</option>
-                    <option value="4">4</option>
-                    <option value="5">5</option>
-                    <option value="6">6</option>
-                    <option value="7">7</option>
-                    <option value="8">8</option>
-                    <option value="9">9</option>
-                    <option value="10">10</option>
-                    <option value="11">11</option>
-                    <option value="12">12</option>
-                    <option value="13">13</option>
-                    <option value="14">14</option>
-                    <option value="15">15</option>
-                    <option value="16">16</option>
-                    <option value="17">17</option>
-                    <option value="18">18</option>
-                    <option value="19">19</option>
-                    <option value="20">20</option>
-                </select>
+                <input size="10" placeholder="Col Amount" value={this.state.cols} onChange={(e) => this.colsUpdate(e)}></input>
 
                 <button onClick={() => this.createBoard(this.state.rows, this.state.cols)}> Create Board </button>
-                <div className="gameField" id="gameField">
+                <div className="gameField" id="gameField" onContextMenu={(e) => this.prevDef(e)}>
                     <div className="columnHint">
                         {
                             this.state.revGameBoard.map((column, key) => (
-                                <div className="colHint" >{this.state.colHints[key]}</div>
+                                <div className="colHint" key={key}>{this.state.colHints[key]}</div>
                             ))
                         }
                     </div>
                     {
                         this.state.gameBoard.map((fubar, key) =>(
-                            <div className="row">
+                            <div className="row" key={key}>
+                                <div className="rowHint" >{this.state.rowHints[key]}</div>
                                 {
                                     fubar.row.map((item, num) => (
-                                        <Square image={this.state.imageTrack[item.num-1]} onClick={() => this.setSelected(item.x, item.y, item.num)} onContextMenu={(e) => this.setXMark(item.x, item.y, item.num, e)} ></Square>
+                                        <Square key={num} image={this.state.imageTrack[item.num-1]} xpos={item.x} ypos={item.y} sqnum={item.num} onMouseDown={(e) => this.fillSelection(e)} onContextMenu={(e) => this.prevDef(e)} onMouseEnter={(e) => this.mouseEntry(e)}></Square>
                                     ))
                                 }
-                                <div className="rowHint" >{this.state.rowHints[key]}</div>
+                                
                             </div>
                         ))
                     }
