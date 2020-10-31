@@ -7,19 +7,19 @@ class Game extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            levelBeaten: false,
-            rows: "",
-            cols: "",
-            gameBoard: [],
-            revGameBoard: [],
-            imageTrack: [],
-            colHints: [],
-            rowHints: [],
-            filledSquares: [],
-            selectedSquares: [],
-            chance: 50,
-            mouseDown: false,
-            fillStyle: "blank",
+            levelBeaten: false, // boolean to check if level is solved
+            rows: "", // Number of rows in grid
+            cols: "", // Number of columns in grid
+            gameBoard: [], // Game Board Array
+            revGameBoard: [], // Reverse game board???
+            imageTrack: [], // Image tracking dictionary to decide what square should be filled/X'd/empty
+            colHints: [], // Array of column hints
+            rowHints: [], // Array of Row Hints
+            filledSquares: [], // Array of squares needed to be filled
+            selectedSquares: [], // Array of squares the player has filled
+            chance: 50, // Random chance seed TODO: Figure out a better way to randomly choose squares
+            mouseDown: false, // Boolean to track mouse state
+            fillStyle: "blank", // Track fill style for square entry
         };
     }
 
@@ -89,7 +89,7 @@ class Game extends React.Component {
 
         // Set hint values
         setTimeout(() => {
-            this.setHints(this.state.filledSquares, rows, cols)
+            this.setHints(this.state.filledSquares, rows, cols);
         }, 1000);
 
 
@@ -264,15 +264,29 @@ class Game extends React.Component {
     }
 
     fillSelection(e) {
+        // Decide what is done when a square is clicked based on what mouse button was pressed
+        // Then set fillstyle to be used for drag selection while mouse button remains down
         var mouseState = e.buttons;
         this.mouseDown(e);
 
         switch (mouseState) {
-            case 1: 
-                this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+            case 1:
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty') {
+                    this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "fill"});
+                } else {
+                    this.setEmpty(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "empty"});
+                }
                 break;
             case 2:
-                this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty') {
+                    this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "x"});
+                } else {
+                    this.setEmpty(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                    this.setState({fillStyle: "empty"});
+                }
                 break;
             default:
                 break;
@@ -281,15 +295,22 @@ class Game extends React.Component {
     }
 
     mouseEntry(e) {
-        console.log("Made it into mouseEntry");
+        // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
         switch (this.state.fillStyle) {
-            case "solid": 
-                this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
-                this.setState({fillStyle: "solid"});
+            case "fill": 
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty' || this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'X') {
+                    this.setSelected(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                }
                 break;
             case "x":
-                this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
-                this.setState({fillStyle: "x"});
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'empty') {
+                    this.setXMark(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                }
+                break;
+            case "empty":
+                if (this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'filled' || this.state.imageTrack[parseInt(e.target.attributes.sqnum.value)-1] === 'X') {
+                    this.setEmpty(parseInt(e.target.attributes.xpos.value), parseInt(e.target.attributes.ypos.value), parseInt(e.target.attributes.sqnum.value));
+                }
                 break;
             default:
                 break;
@@ -297,30 +318,15 @@ class Game extends React.Component {
     }
 
     setSelected(row, col, num) {
-
         var newSelected = this.state.selectedSquares.sort();
         var emptySelected = [];
 
-        // If square is not already selected, change image to show that it is and add it to the selected list.
-        // If square is already selected, change image to show it isn't now, and remove it from the selected list.
-        if (this.state.imageTrack[num-1] === 'empty') {
-            this.setState({
-                imageTrack: this.state.imageTrack.fill('filled', num-1, num),
-                fillStyle: "solid"});
-            newSelected.push({x:row, y:col});
-            this.setState({selectedSquares: newSelected});
-        } else {
-            this.setState({
-                imageTrack: this.state.imageTrack.fill('empty', num-1, num),
-                fillStyle: "blank"});
-            newSelected.forEach(s => {
-                if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
-                    emptySelected.push(s);
-                }
-            });
-
-            this.setState({selectedSquares: emptySelected});
-        }
+        // Fill current square
+        // Check to see if filling square solved the puzzle
+        this.setState({
+            imageTrack: this.state.imageTrack.fill('filled', num-1, num)});
+        newSelected.push({x:row, y:col});
+        this.setState({selectedSquares: newSelected});
 
         setTimeout(() => {
             this.checkSolve();
@@ -331,30 +337,40 @@ class Game extends React.Component {
         var newSelected = this.state.selectedSquares.sort();
         var emptySelected = [];
 
-        // If square is not already selected, change image to show that it is and add it to the selected list.
-        // If square is already selected, change image to show it isn't now, and remove it from the selected list.
-        if (this.state.imageTrack[num-1] === 'empty') {
-            this.setState({
-                imageTrack: this.state.imageTrack.fill('X', num-1, num),
-                fillStyle: "x"});
-        } else if (this.state.imageTrack[num-1] === 'filled') {
-            this.setState({
-                imageTrack: this.state.imageTrack.fill('X', num-1, num),
-                fillStyle: "blank"});
-            newSelected.forEach(s => {
-                if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
-                    emptySelected.push(s);
-                }
-            });
+        // Fill current square with X
+        this.setState({
+            imageTrack: this.state.imageTrack.fill('X', num-1, num)});
+        newSelected.forEach(s => {
+            if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
+                emptySelected.push(s);
+            }
+        });
 
-            this.setState({selectedSquares: emptySelected});
-        } else {
-            this.setState({imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
-        }
+        this.setState({selectedSquares: emptySelected});
+    }
 
+    setEmpty(row, col, num) {
+
+        var newSelected = this.state.selectedSquares.sort();
+        var emptySelected = [];
+
+        // Remove entry in current square
+        // Check to see if removing square solved the puzzle
+        this.setState({
+            imageTrack: this.state.imageTrack.fill('empty', num-1, num)});
+            
+        newSelected.forEach(s => {
+            if (JSON.stringify(s) !== JSON.stringify({x: row, y: col})) {
+                emptySelected.push(s);
+            }
+        });
+
+        this.setState({selectedSquares: emptySelected});
+    
         setTimeout(() => {
             this.checkSolve();
         }, 500);
+
     }
 
     // Code to change the state of mouse position
@@ -362,10 +378,12 @@ class Game extends React.Component {
         e.preventDefault();
         this.setState({mouseDown: true});
     }
+
     mouseUp(e) {
         e.preventDefault();
         this.setState({mouseDown: false, fillStyle: "blank"});
     }
+
     prevDef(e) {
         // Helper function specifically to prevent default right click action
         // We'll clean it up later
@@ -375,12 +393,7 @@ class Game extends React.Component {
     // Check after each cell fill/unfill to see if the squares the user has selected match
     // the cells in the filledSquares array in this.state
     checkSolve() {
-        console.log("Checking the solve");
         var solved = true;
-
-        console.log("Comparison");
-        console.log(JSON.stringify(this.state.filledSquares));
-        console.log(JSON.stringify(this.state.selectedSquares));
 
         this.state.selectedSquares.forEach(s => {
 
@@ -396,9 +409,7 @@ class Game extends React.Component {
             }
         });
 
-        console.log(solved);
         if (solved && (this.state.selectedSquares.length === this.state.filledSquares.length)) {
-            console.log("solved..... bitch");
             alert("YOU DID IT");
         }
     }
@@ -420,7 +431,7 @@ class Game extends React.Component {
                 <input size="10" placeholder="Col Amount" value={this.state.cols} onChange={(e) => this.colsUpdate(e)}></input>
 
                 <button onClick={() => this.createBoard(this.state.rows, this.state.cols)}> Create Board </button>
-                <div className="gameField" id="gameField">
+                <div className="gameField" id="gameField" onContextMenu={(e) => this.prevDef(e)}>
                     <div className="columnHint">
                         {
                             this.state.revGameBoard.map((column, key) => (

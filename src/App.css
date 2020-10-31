@@ -27,17 +27,23 @@
   width: 100%;
   padding-left: 30%;;
 }
+
+.gameField {
+  width: 100;
+}
+
 .row {
   width: 50%;
 }
 
 .columnHint {
-  padding-left: 5%;
+  padding-left: 8%;
 }
 
 .rowHint {
-  display: inline-flex;
-  min-width: 10%;
+  display: inline-block;
+  min-width: 16%;
+  text-align: right;
 
 }
 
