@@ -25,7 +25,7 @@
 .gameWrapper {
   height: 100%;
   width: 100%;
-  padding-left: 30%;;
+  padding-left: 30%;
 }
 
 .gameField {
@@ -44,16 +44,14 @@
   display: inline-block;
   min-width: 16%;
   text-align: right;
-
 }
 
 .colHint {
   display: inline-flex;
-  padding-left: .1em;
+  padding-left: 0.1em;
   padding-right: 1em;
   word-break: break-word;
   width: 5px;
   border-left-style: solid;
-  border-left-width: .1em;
-
+  border-left-width: 0.1em;
 }
