@@ -179,14 +179,14 @@ class Game extends React.Component {
           }
         }
 
-        if (!found || j == cols) {
+        if (!found || j === cols) {
           if (count > 0) {
             hint = hint + count;
             count = 0;
           }
         }
 
-        if (hint === "" && j == cols && !found) {
+        if (hint === "" && j === cols && !found) {
           hint = "0";
         }
       }
@@ -267,14 +267,14 @@ class Game extends React.Component {
           this.setSelected(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
           this.setState({ fillStyle: "fill" });
         } else {
           this.setEmpty(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
           this.setState({ fillStyle: "empty" });
         }
@@ -288,14 +288,14 @@ class Game extends React.Component {
           this.setXMark(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
           this.setState({ fillStyle: "x" });
         } else {
           this.setEmpty(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
           this.setState({ fillStyle: "empty" });
         }
@@ -320,7 +320,7 @@ class Game extends React.Component {
           this.setSelected(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
         }
         break;
@@ -333,7 +333,7 @@ class Game extends React.Component {
           this.setXMark(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
         }
         break;
@@ -349,7 +349,7 @@ class Game extends React.Component {
           this.setEmpty(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
-            parseInt(e.target.attributes.sqnum.value),
+            parseInt(e.target.attributes.sqnum.value)
           );
         }
         break;
@@ -475,26 +475,22 @@ class Game extends React.Component {
             size="10"
             placeholder="Row Amount"
             value={this.state.rows}
-            onChange={(e) => this.rowsUpdate(e)}
-          ></input>
+            onChange={(e) => this.rowsUpdate(e)}></input>
           X
           <input
             size="10"
             placeholder="Col Amount"
             value={this.state.cols}
-            onChange={(e) => this.colsUpdate(e)}
-          ></input>
+            onChange={(e) => this.colsUpdate(e)}></input>
           <button
-            onClick={() => this.createBoard(this.state.rows, this.state.cols)}
-          >
+            onClick={() => this.createBoard(this.state.rows, this.state.cols)}>
             {" "}
             Create Board{" "}
           </button>
           <div
             className="gameField"
             id="gameField"
-            onContextMenu={(e) => this.prevDef(e)}
-          >
+            onContextMenu={(e) => this.prevDef(e)}>
             <div className="columnHint">
               {this.state.revGameBoard.map((column, key) => (
                 <div className="colHint" key={key}>
@@ -514,8 +510,7 @@ class Game extends React.Component {
                     sqnum={item.num}
                     onMouseDown={(e) => this.fillSelection(e)}
                     onContextMenu={(e) => this.prevDef(e)}
-                    onMouseEnter={(e) => this.mouseEntry(e)}
-                  ></Square>
+                    onMouseEnter={(e) => this.mouseEntry(e)}></Square>
                 ))}
               </div>
             ))}
