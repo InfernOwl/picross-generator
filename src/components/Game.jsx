@@ -31,14 +31,15 @@ function Game() {
       // Hard reset of all parameters on board creation
       setLevelBeaten(false);
       setGameBoard([]);
+      setRevGameBoard([]);
       setImageTrack ([]);
-      colHints([]);
-      rowHints([]);
-      filledSquares([]);
-      selectedSquares([]);
-      chance(50);
-      mouseDown(false);
-      fillStyle("blank");
+      setColHints([]);
+      setRowHints([]);
+      setFilledSquares([]);
+      setSelectedSquares([]);
+      setChance(50);
+      setMouseDown(false);
+      setFillStyle("blank");
      
       // For x amount of rows and y amount of cols create a grid to match
       // where each grid item has a Square object
@@ -73,15 +74,17 @@ function Game() {
       }
   
       // Board is created now randomly choose which squares get filled
-      this.setFilled(rows, cols);
+      setFilled(rows, cols);
   
       // Set hint values
       setTimeout(() => {
-        this.setHints(this.state.filledSquares, rows, cols);
+        setHints(filledSquares, rows, cols);
       }, 1000);
   
       // Instantiate, basically
-      this.setState({ gameBoard: eRow, revGameBoard: eCol, imageTrack: imgHold });
+      setGameBoard(eRow);
+      setRevGameBoard(eCol);
+      imageTrack(imgHold);
   };
 
   // Move to Util
@@ -126,20 +129,19 @@ function Game() {
 
   const setFilled = (rows, cols)=> {
     var totalCount = rows * cols;
-    var squares = [];
 
     for (var i = 1; i <= totalCount; i++) {
       var rand = 1 + Math.random() * (100 - 1);
 
       if (rand > 50) {
         filledSquares.push({
-          x: this.rowCheck(i, rows, cols),
-          y: this.colCheck(i, cols),
+          x: rowCheck(i, rows, cols),
+          y: colCheck(i, cols),
         });
       }
     }
 
-    this.setState({ filledSquares: filledSquares });
+    setFilledSquares(filledSquares);
   }
 
   const setHintR=(arr, rows, cols)=> {
@@ -153,7 +155,7 @@ function Game() {
       count = 0;
       found = false;
       hint = "";
-      hintArr = this.state.rowHints;
+      hintArr = rowHints;
 
       for (var j = 1; j <= cols; j++) {
         found = false;
@@ -193,7 +195,7 @@ function Game() {
       count = 0;
       found = false;
       hint = "";
-      hintArr = this.state.colHints;
+      hintArr = colHints;
 
       for (var i = 1; i <= rows; i++) {
         found = false;
@@ -205,14 +207,14 @@ function Game() {
           }
         }
 
-        if (!found || i == rows) {
+        if (!found || i === rows) {
           if (count > 0) {
             hint = hint + count;
             count = 0;
           }
         }
 
-        if (hint === "" && i == rows && !found) {
+        if (hint === "" && i === rows && !found) {
           hint = "0";
         }
       }
@@ -235,49 +237,50 @@ function Game() {
     // Decide what is done when a square is clicked based on what mouse button was pressed
     // Then set fillstyle to be used for drag selection while mouse button remains down
     var mouseState = e.buttons;
-    this.mouseDown(e);
+    mouseDown(e);
 
     switch (mouseState) {
       case 1:
         if (
-          this.state.imageTrack[
+        imageTrack[
             parseInt(e.target.attributes.sqnum.value) - 1
           ] === "empty"
         ) {
-          this.setSelected(
+         setSelected(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          this.setState({ fillStyle: "fill" });
+          setFillStyle("fill")
         } else {
-          this.setEmpty(
+          setEmpty(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          this.setState({ fillStyle: "empty" });
+          setFillStyle("empty")
         }
         break;
       case 2:
         if (
-          this.state.imageTrack[
+        imageTrack[
             parseInt(e.target.attributes.sqnum.value) - 1
           ] === "empty"
         ) {
-          this.setXMark(
+         setXMark(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          this.setState({ fillStyle: "x" });
+          setFillStyle("x")
         } else {
-          this.setEmpty(
+          setEmpty(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          this.setState({ fillStyle: "empty" });
+
+          setFillStyle("empty")
         }
         break;
       default:
@@ -287,17 +290,17 @@ function Game() {
 
   const mouseEntry = (e) => {
     // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
-    switch (this.state.fillStyle) {
+    switch (fillStyle) {
         case "fill":
           if (
-            this.state.imageTrack[
+            imageTrack[
               parseInt(e.target.attributes.sqnum.value) - 1
             ] === "empty" ||
-            this.state.imageTrack[
+          imageTrack[
               parseInt(e.target.attributes.sqnum.value) - 1
             ] === "X"
           ) {
-            this.setSelected(
+          setSelected(
               parseInt(e.target.attributes.xpos.value),
               parseInt(e.target.attributes.ypos.value),
               parseInt(e.target.attributes.sqnum.value)
@@ -306,11 +309,11 @@ function Game() {
           break;
         case "x":
           if (
-            this.state.imageTrack[
+          imageTrack[
               parseInt(e.target.attributes.sqnum.value) - 1
             ] === "empty"
           ) {
-            this.setXMark(
+            setXMark(
               parseInt(e.target.attributes.xpos.value),
               parseInt(e.target.attributes.ypos.value),
               parseInt(e.target.attributes.sqnum.value)
@@ -319,14 +322,14 @@ function Game() {
           break;
         case "empty":
           if (
-            this.state.imageTrack[
+          imageTrack[
               parseInt(e.target.attributes.sqnum.value) - 1
             ] === "filled" ||
-            this.state.imageTrack[
+           imageTrack[
               parseInt(e.target.attributes.sqnum.value) - 1
             ] === "X"
           ) {
-            this.setEmpty(
+            setEmpty(
               parseInt(e.target.attributes.xpos.value),
               parseInt(e.target.attributes.ypos.value),
               parseInt(e.target.attributes.sqnum.value)
@@ -339,66 +342,58 @@ function Game() {
   };
 
   const setSelected = (row, col, num) => {
-    var newSelected = this.state.selectedSquares.sort();
-    var emptySelected = [];
+    var newSelected = selectedSquares.sort();
 
     // Fill current square
     // Check to see if filling square solved the puzzle
-    this.setState({
-      imageTrack: this.state.imageTrack.fill("filled", num - 1, num),
-    });
+    setImageTrack(imageTrack.fill("filled", num - 1, num));
     newSelected.push({ x: row, y: col });
-    this.setState({ selectedSquares: newSelected });
+    setSelectedSquares(newSelected);
 
     setTimeout(() => {
-      this.checkSolve();
+      checkSolve();
     }, 500);
   };
 
   const setXMark = (row, col, num) => {
-    var newSelected = this.state.selectedSquares.sort();
+    var newSelected =selectedSquares.sort();
     var emptySelected = [];
 
     // Fill current square with X
-    this.setState({
-      imageTrack: this.state.imageTrack.fill("X", num - 1, num),
-    });
-    newSelected.forEach((s) => {
+    setImageTrack(imageTrack.fill("X", num - 1, num));
+      newSelected.forEach((s) => {
       if (JSON.stringify(s) !== JSON.stringify({ x: row, y: col })) {
         emptySelected.push(s);
       }
     });
 
-    this.setState({ selectedSquares: emptySelected });
+    setSelectedSquares(emptySelected);
   };
 
   const setEmpty = (row, col, num) => {
-    var newSelected = this.state.selectedSquares.sort();
+    var newSelected = selectedSquares.sort();
     var emptySelected = [];
 
     // Remove entry in current square
     // Check to see if removing square solved the puzzle
-    this.setState({
-      imageTrack: this.state.imageTrack.fill("empty", num - 1, num),
-    });
+    setImageTrack(imageTrack.fill("empty", num - 1, num));
 
     newSelected.forEach((s) => {
       if (JSON.stringify(s) !== JSON.stringify({ x: row, y: col })) {
         emptySelected.push(s);
       }
     });
-
-    this.setState({ selectedSquares: emptySelected });
+    setSelectedSquares(emptySelected);
 
     setTimeout(() => {
-      this.checkSolve();
+     checkSolve();
     }, 500);
   };
 
-  const mouseDownHandler = (e) => {
-    e.preventDefault();
-    setMouseDown(true);
-  };
+  // const mouseDownHandler = (e) => {
+  //   e.preventDefault();
+  //   setMouseDown(true);
+  // };
 
   const mouseUpHandler = (e) => {
     e.preventDefault();
@@ -413,9 +408,9 @@ function Game() {
   const checkSolve = () => {
     var solved = true;
 
-    this.state.selectedSquares.forEach((s) => {
+    selectedSquares.forEach((s) => {
       var found = false;
-      this.state.filledSquares.forEach((f) => {
+     filledSquares.forEach((f) => {
         if (JSON.stringify(f) === JSON.stringify(s)) {
           found = true;
         }
@@ -428,19 +423,19 @@ function Game() {
 
     if (
       solved &&
-      this.state.selectedSquares.length === this.state.filledSquares.length
+     selectedSquares.length === filledSquares.length
     ) {
       alert("YOU DID IT");
     }
   };
 
-  const getAnswer = () => {
-    console.log(gameBoard);
-  };
+  // const getAnswer = () => {
+  //   console.log(gameBoard);
+  // };
 
-  const getClicked = () => {
-    console.log(filledSquares);
-  };
+  // const getClicked = () => {
+  //   console.log(filledSquares);
+  // };
 
   return (
     <Container>

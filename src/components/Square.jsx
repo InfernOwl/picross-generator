@@ -1,7 +1,7 @@
 import React from "react";
-import emptySquare from "./assets/iconmonstr-square-4.svg";
-import filledSquare from "./assets/iconmonstr-square-1.svg";
-import filledX from "./assets/iconmonstr-x-mark-1.svg";
+import emptySquare from "../assets/iconmonstr-square-4.svg";
+import filledSquare from "../assets/iconmonstr-square-1.svg";
+import filledX from "../assets/iconmonstr-x-mark-1.svg";
 
 function Square(props) {
   const imageSelect = (image) => {
