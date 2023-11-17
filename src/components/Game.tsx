@@ -2,20 +2,30 @@ import React, { useState } from "react";
 import Square from "./Square";
 import Container from "react-bootstrap/Container";
 
+interface Cell {
+  x: number;
+  y: number;
+  num: number;
+}
+
+interface Grid {
+  grid: Cell[];
+}
+
 function Game() {
-  const [levelBeaten, setLevelBeaten] = useState(false);
-  const [rows, setRows] = useState("");
-  const [cols, setCols] = useState("");
-  const [gameBoard, setGameBoard] = useState([]);
-  const [revGameBoard, setRevGameBoard] = useState([]);
-  const [imageTrack, setImageTrack] = useState([]);
-  const [colHints, setColHints] = useState([]);
-  const [rowHints, setRowHints] = useState([]);
-  const [filledSquares, setFilledSquares] = useState([]);
-  const [selectedSquares, setSelectedSquares] = useState([]);
-  const [chance, setChance] = useState(50);
-  const [mouseDown, setMouseDown] = useState(false);
-  const [fillStyle, setFillStyle] = useState("blank");
+  const [levelBeaten, setLevelBeaten] = useState<boolean>(false);
+  const [rows, setRows] = useState<string>("");
+  const [cols, setCols] = useState<string>("");
+  const [gameBoard, setGameBoard] = useState<Grid[]>([]);
+  const [revGameBoard, setRevGameBoard] = useState<Grid[]>([]);
+  const [imageTrack, setImageTrack] = useState<any[]>([]);
+  const [colHints, setColHints] = useState<any[]>([]);
+  const [rowHints, setRowHints] = useState<any[]>([]);
+  const [filledSquares, setFilledSquares] = useState<{x,y}[]>([]);
+  const [selectedSquares, setSelectedSquares] = useState<{x,y}[]>([]);
+  const [chance, setChance] = useState<Number>(50);
+  const [mouseDown, setMouseDown] = useState<boolean>(false);
+  const [fillStyle, setFillStyle] = useState<string>("blank");
 
 
 //   useEffect(() => {
@@ -43,34 +53,34 @@ function Game() {
      
       // For x amount of rows and y amount of cols create a grid to match
       // where each grid item has a Square object
-      var eRow = [];
-      var eCol = [];
+      var eRow:Grid[] = [];
+      var eCol:Grid[] = [];
   
       // Create imageTracking list for filled and unfilled squares
-      var imgHold = [];
+      var imgHold:any[] = [];
       var i = 1;
   
       for (var x = 1; x <= rows; x++) {
-        var element = [];
+        var element:Cell[] = [];
         for (var y = 1; y <= cols; y++) {
           element.push({ x: x, y: y, num: i });
           imgHold.push("empty");
           i++;
         }
   
-        eRow.push({ row: element });
+        eRow.push({ grid: element });
       }
   
       // Create a reversed board for the column hints
       for (var t = 1; t <= cols; t++) {
-        var colElement = [];
+        var colElement:Cell[] = [];
         for (var u = 1; u <= rows; u++) {
           colElement.push({ x: u, y: t, num: i });
           imgHold.push("empty");
           i++;
         }
   
-        eCol.push({ row: colElement });
+        eCol.push({ grid: colElement });
       }
   
       // Board is created now randomly choose which squares get filled
@@ -84,7 +94,7 @@ function Game() {
       // Instantiate, basically
       setGameBoard(eRow);
       setRevGameBoard(eCol);
-      imageTrack(imgHold);
+      setImageTrack(imgHold);
   };
 
   // Move to Util
@@ -144,9 +154,9 @@ function Game() {
     setFilledSquares(filledSquares);
   }
 
-  const setHintR=(arr, rows, cols)=> {
+  const setHintR=(arr, rows, cols):any[]=> {
     var hint = "";
-    var hintArr = [];
+    var hintArr:String[]  = [];
     var count = 0;
     var found = false;
 
@@ -186,7 +196,7 @@ function Game() {
   }
   const setHintsC =(arr, rows, cols) =>{
     var hint = "";
-    var hintArr = [];
+    var hintArr:String[] = [];
     var count = 0;
     var found = false;
 
@@ -237,7 +247,7 @@ function Game() {
     // Decide what is done when a square is clicked based on what mouse button was pressed
     // Then set fillstyle to be used for drag selection while mouse button remains down
     var mouseState = e.buttons;
-    mouseDown(e);
+    //mouseDown(e);
 
     switch (mouseState) {
       case 1:
@@ -356,8 +366,8 @@ function Game() {
   };
 
   const setXMark = (row, col, num) => {
-    var newSelected =selectedSquares.sort();
-    var emptySelected = [];
+    var newSelected:{x,y}[] =selectedSquares.sort();
+    var emptySelected:{x,y}[] = [];
 
     // Fill current square with X
     setImageTrack(imageTrack.fill("X", num - 1, num));
@@ -371,8 +381,8 @@ function Game() {
   };
 
   const setEmpty = (row, col, num) => {
-    var newSelected = selectedSquares.sort();
-    var emptySelected = [];
+    var newSelected:{x,y}[] = selectedSquares.sort();
+    var emptySelected:{x,y}[] = [];
 
     // Remove entry in current square
     // Check to see if removing square solved the puzzle
@@ -442,18 +452,18 @@ function Game() {
       <div className="gameWrapper" onMouseUp={mouseUpHandler}>
         <p>Grid Size: </p>
         <input
-          size="10"
+          size={10}
           placeholder="Row Amount"
           value={rows}
           onChange={rowsUpdate}
-        ></input>
+       />
         X
         <input
-          size="10"
+          size={10}
           placeholder="Col Amount"
           value={cols}
           onChange={colsUpdate}
-        ></input>
+        />
         <button onClick={() => createBoard(rows, cols)}>
           {" "}
           Create Board{" "}
@@ -466,10 +476,10 @@ function Game() {
               </div>
             ))}
           </div>
-          {gameBoard.map((fubar, key) => (
+          {gameBoard.map((board, key) => (
             <div className="row" key={key}>
               <div className="rowHint">{rowHints[key]}</div>
-              {fubar.row.map((item, num) => (
+              {board.grid.map((item, num) => (
                 <Square
                   key={num}
                   image={imageTrack[item.num - 1]}
@@ -479,7 +489,7 @@ function Game() {
                   onMouseDown={fillSelection}
                   onContextMenu={prevDef}
                   onMouseEnter={mouseEntry}
-                ></Square>
+                />
               ))}
             </div>
           ))}
