@@ -12,7 +12,7 @@ interface Grid {
   grid: Cell[];
 }
 
-function Game() {
+const Game = () => {
   const [levelBeaten, setLevelBeaten] = useState<boolean>(false);
   const [rows, setRows] = useState<string>("");
   const [cols, setCols] = useState<string>("");
@@ -21,84 +21,85 @@ function Game() {
   const [imageTrack, setImageTrack] = useState<any[]>([]);
   const [colHints, setColHints] = useState<any[]>([]);
   const [rowHints, setRowHints] = useState<any[]>([]);
-  const [filledSquares, setFilledSquares] = useState<{x,y}[]>([]);
-  const [selectedSquares, setSelectedSquares] = useState<{x,y}[]>([]);
+  const [filledSquares, setFilledSquares] = useState<{ x: any; y: any }[]>([]);
+  const [selectedSquares, setSelectedSquares] = useState<{ x: any; y: any }[]>(
+    []
+  );
   const [chance, setChance] = useState<Number>(50);
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [fillStyle, setFillStyle] = useState<string>("blank");
 
+  //   useEffect(() => {
 
-//   useEffect(() => {
+  // }, []);
 
-// }, []);
-
-  const createBoard = (rows, cols) => {
+  const createBoard = (rows: any, cols: any) => {
     // Fail if Rows or Columns are not valid
     if (!validNumber(rows) || !validNumber(cols)) {
-        return false;
+      return false;
+    }
+
+    // Hard reset of all parameters on board creation
+    setLevelBeaten(false);
+    setGameBoard([]);
+    setRevGameBoard([]);
+    setImageTrack([]);
+    setColHints([]);
+    setRowHints([]);
+    setFilledSquares([]);
+    setSelectedSquares([]);
+    setChance(50);
+    setMouseDown(false);
+    setFillStyle("blank");
+
+    // For x amount of rows and y amount of cols create a grid to match
+    // where each grid item has a Square object
+    var eRow: Grid[] = [];
+    var eCol: Grid[] = [];
+
+    // Create imageTracking list for filled and unfilled squares
+    var imgHold: any[] = [];
+    var i = 1;
+
+    for (var x = 1; x <= rows; x++) {
+      var element: Cell[] = [];
+      for (var y = 1; y <= cols; y++) {
+        element.push({ x: x, y: y, num: i });
+        imgHold.push("empty");
+        i++;
       }
-  
-      // Hard reset of all parameters on board creation
-      setLevelBeaten(false);
-      setGameBoard([]);
-      setRevGameBoard([]);
-      setImageTrack ([]);
-      setColHints([]);
-      setRowHints([]);
-      setFilledSquares([]);
-      setSelectedSquares([]);
-      setChance(50);
-      setMouseDown(false);
-      setFillStyle("blank");
-     
-      // For x amount of rows and y amount of cols create a grid to match
-      // where each grid item has a Square object
-      var eRow:Grid[] = [];
-      var eCol:Grid[] = [];
-  
-      // Create imageTracking list for filled and unfilled squares
-      var imgHold:any[] = [];
-      var i = 1;
-  
-      for (var x = 1; x <= rows; x++) {
-        var element:Cell[] = [];
-        for (var y = 1; y <= cols; y++) {
-          element.push({ x: x, y: y, num: i });
-          imgHold.push("empty");
-          i++;
-        }
-  
-        eRow.push({ grid: element });
+
+      eRow.push({ grid: element });
+    }
+
+    // Create a reversed board for the column hints
+    for (var t = 1; t <= cols; t++) {
+      var colElement: Cell[] = [];
+      for (var u = 1; u <= rows; u++) {
+        colElement.push({ x: u, y: t, num: i });
+        imgHold.push("empty");
+        i++;
       }
-  
-      // Create a reversed board for the column hints
-      for (var t = 1; t <= cols; t++) {
-        var colElement:Cell[] = [];
-        for (var u = 1; u <= rows; u++) {
-          colElement.push({ x: u, y: t, num: i });
-          imgHold.push("empty");
-          i++;
-        }
-  
-        eCol.push({ grid: colElement });
-      }
-  
-      // Board is created now randomly choose which squares get filled
-      setFilled(rows, cols);
-  
-      // Set hint values
-      setTimeout(() => {
-        setHints(filledSquares, rows, cols);
-      }, 1000);
-  
-      // Instantiate, basically
-      setGameBoard(eRow);
-      setRevGameBoard(eCol);
-      setImageTrack(imgHold);
+
+      eCol.push({ grid: colElement });
+    }
+
+    // Board is created now randomly choose which squares get filled
+    setFilled(rows, cols);
+
+    // Set hint values
+    setTimeout(() => {
+      setHints(filledSquares, rows, cols);
+    }, 1000);
+
+    // Instantiate, basically
+    setGameBoard(eRow);
+    setRevGameBoard(eCol);
+    setImageTrack(imgHold);
   };
 
   // Move to Util
-  const validNumber = (num) => {
+  const validNumber = (num: any) => {
     var regex = new RegExp("^$|[-+]?[1-9]\\d*");
     var valid = false;
 
@@ -109,35 +110,35 @@ function Game() {
     return valid;
   };
 
-  const rowsUpdate = (e) => {
+  const rowsUpdate = (e: any) => {
     if (validNumber(e.target.value.toString())) {
       setRows(e.target.value.toString());
     }
   };
 
-  const colsUpdate = (e) => {
+  const colsUpdate = (e: any) => {
     if (validNumber(e.target.value)) {
       setCols(e.target.value);
     }
   };
 
-  const rowCheck =(val, rows, cols) => {
+  const rowCheck = (val: any, rows: any, cols: any) => {
     for (var i = 1; i <= rows; i++) {
       if (val <= cols * i) {
         return i;
       }
     }
-  }
+  };
 
-  const colCheck = (val, cols) =>{
+  const colCheck = (val: any, cols: any) => {
     if (val % cols === 0) {
       return parseInt(cols);
     } else {
       return val % cols;
     }
-  }
+  };
 
-  const setFilled = (rows, cols)=> {
+  const setFilled = (rows: any, cols: any) => {
     var totalCount = rows * cols;
 
     for (var i = 1; i <= totalCount; i++) {
@@ -152,11 +153,11 @@ function Game() {
     }
 
     setFilledSquares(filledSquares);
-  }
+  };
 
-  const setHintR=(arr, rows, cols):any[]=> {
+  const setHintR = (arr: any, rows: any, cols: any): any[] => {
     var hint = "";
-    var hintArr:String[]  = [];
+    var hintArr: String[] = [];
     var count = 0;
     var found = false;
 
@@ -193,10 +194,10 @@ function Game() {
     }
 
     return hintArr;
-  }
-  const setHintsC =(arr, rows, cols) =>{
+  };
+  const setHintsC = (arr: any, rows: any, cols: any) => {
     var hint = "";
-    var hintArr:String[] = [];
+    var hintArr: String[] = [];
     var count = 0;
     var found = false;
 
@@ -233,56 +234,51 @@ function Game() {
     }
 
     return hintArr;
-  }
+  };
 
-  const setHints = (filledArr, rows, cols) => {
+  const setHints = (filledArr: any, rows: any, cols: any) => {
     // Iterate through filledArr and create colHint array and rowHint array to pass to state
-   setRowHints(setHintR(filledArr, rows, cols)) 
+    setRowHints(setHintR(filledArr, rows, cols));
 
     setColHints(setHintsC(filledArr, rows, cols));
-  }
+  };
 
-
-  const fillSelection = (e) => {
+  const fillSelection = (e: any) => {
     // Decide what is done when a square is clicked based on what mouse button was pressed
     // Then set fillstyle to be used for drag selection while mouse button remains down
     var mouseState = e.buttons;
-    //mouseDown(e);
+    //mouseDown(e:any);
 
     switch (mouseState) {
       case 1:
         if (
-        imageTrack[
-            parseInt(e.target.attributes.sqnum.value) - 1
-          ] === "empty"
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] === "empty"
         ) {
-         setSelected(
+          setSelected(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          setFillStyle("fill")
+          setFillStyle("fill");
         } else {
           setEmpty(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          setFillStyle("empty")
+          setFillStyle("empty");
         }
         break;
       case 2:
         if (
-        imageTrack[
-            parseInt(e.target.attributes.sqnum.value) - 1
-          ] === "empty"
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] === "empty"
         ) {
-         setXMark(
+          setXMark(
             parseInt(e.target.attributes.xpos.value),
             parseInt(e.target.attributes.ypos.value),
             parseInt(e.target.attributes.sqnum.value)
           );
-          setFillStyle("x")
+          setFillStyle("x");
         } else {
           setEmpty(
             parseInt(e.target.attributes.xpos.value),
@@ -290,7 +286,7 @@ function Game() {
             parseInt(e.target.attributes.sqnum.value)
           );
 
-          setFillStyle("empty")
+          setFillStyle("empty");
         }
         break;
       default:
@@ -298,60 +294,52 @@ function Game() {
     }
   };
 
-  const mouseEntry = (e) => {
+  const mouseEntry = (e: any) => {
     // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
     switch (fillStyle) {
-        case "fill":
-          if (
-            imageTrack[
-              parseInt(e.target.attributes.sqnum.value) - 1
-            ] === "empty" ||
-          imageTrack[
-              parseInt(e.target.attributes.sqnum.value) - 1
-            ] === "X"
-          ) {
+      case "fill":
+        if (
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] ===
+            "empty" ||
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] === "X"
+        ) {
           setSelected(
-              parseInt(e.target.attributes.xpos.value),
-              parseInt(e.target.attributes.ypos.value),
-              parseInt(e.target.attributes.sqnum.value)
-            );
-          }
-          break;
-        case "x":
-          if (
-          imageTrack[
-              parseInt(e.target.attributes.sqnum.value) - 1
-            ] === "empty"
-          ) {
-            setXMark(
-              parseInt(e.target.attributes.xpos.value),
-              parseInt(e.target.attributes.ypos.value),
-              parseInt(e.target.attributes.sqnum.value)
-            );
-          }
-          break;
-        case "empty":
-          if (
-          imageTrack[
-              parseInt(e.target.attributes.sqnum.value) - 1
-            ] === "filled" ||
-           imageTrack[
-              parseInt(e.target.attributes.sqnum.value) - 1
-            ] === "X"
-          ) {
-            setEmpty(
-              parseInt(e.target.attributes.xpos.value),
-              parseInt(e.target.attributes.ypos.value),
-              parseInt(e.target.attributes.sqnum.value)
-            );
-          }
-          break;
-        default:
-          break;
-      }
+            parseInt(e.target.attributes.xpos.value),
+            parseInt(e.target.attributes.ypos.value),
+            parseInt(e.target.attributes.sqnum.value)
+          );
+        }
+        break;
+      case "x":
+        if (
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] === "empty"
+        ) {
+          setXMark(
+            parseInt(e.target.attributes.xpos.value),
+            parseInt(e.target.attributes.ypos.value),
+            parseInt(e.target.attributes.sqnum.value)
+          );
+        }
+        break;
+      case "empty":
+        if (
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] ===
+            "filled" ||
+          imageTrack[parseInt(e.target.attributes.sqnum.value) - 1] === "X"
+        ) {
+          setEmpty(
+            parseInt(e.target.attributes.xpos.value),
+            parseInt(e.target.attributes.ypos.value),
+            parseInt(e.target.attributes.sqnum.value)
+          );
+        }
+        break;
+      default:
+        break;
+    }
   };
 
-  const setSelected = (row, col, num) => {
+  const setSelected = (row: any, col: any, num: any) => {
     var newSelected = selectedSquares.sort();
 
     // Fill current square
@@ -365,13 +353,13 @@ function Game() {
     }, 500);
   };
 
-  const setXMark = (row, col, num) => {
-    var newSelected:{x,y}[] =selectedSquares.sort();
-    var emptySelected:{x,y}[] = [];
+  const setXMark = (row: any, col: any, num: any) => {
+    var newSelected: { x: any; y: any }[] = selectedSquares.sort();
+    var emptySelected: { x: any; y: any }[] = [];
 
     // Fill current square with X
     setImageTrack(imageTrack.fill("X", num - 1, num));
-      newSelected.forEach((s) => {
+    newSelected.forEach((s) => {
       if (JSON.stringify(s) !== JSON.stringify({ x: row, y: col })) {
         emptySelected.push(s);
       }
@@ -380,9 +368,9 @@ function Game() {
     setSelectedSquares(emptySelected);
   };
 
-  const setEmpty = (row, col, num) => {
-    var newSelected:{x,y}[] = selectedSquares.sort();
-    var emptySelected:{x,y}[] = [];
+  const setEmpty = (row: any, col: any, num: any) => {
+    var newSelected: { x: any; y: any }[] = selectedSquares.sort();
+    var emptySelected: { x: any; y: any }[] = [];
 
     // Remove entry in current square
     // Check to see if removing square solved the puzzle
@@ -396,31 +384,31 @@ function Game() {
     setSelectedSquares(emptySelected);
 
     setTimeout(() => {
-     checkSolve();
+      checkSolve();
     }, 500);
   };
 
-  // const mouseDownHandler = (e) => {
+  // const mouseDownHandler = (e:any) => {
   //   e.preventDefault();
   //   setMouseDown(true);
   // };
 
-  const mouseUpHandler = (e) => {
+  const mouseUpHandler = (e: any) => {
     e.preventDefault();
     setMouseDown(false);
     setFillStyle("blank");
   };
 
-  const prevDef = (e) => {
+  const prevDef = (e: any) => {
     e.preventDefault();
   };
 
   const checkSolve = () => {
     var solved = true;
 
-    selectedSquares.forEach((s) => {
+    selectedSquares.forEach((s: any) => {
       var found = false;
-     filledSquares.forEach((f) => {
+      filledSquares.forEach((f: any) => {
         if (JSON.stringify(f) === JSON.stringify(s)) {
           found = true;
         }
@@ -431,10 +419,7 @@ function Game() {
       }
     });
 
-    if (
-      solved &&
-     selectedSquares.length === filledSquares.length
-    ) {
+    if (solved && selectedSquares.length === filledSquares.length) {
       alert("YOU DID IT");
     }
   };
@@ -448,55 +433,50 @@ function Game() {
   // };
 
   return (
-    <Container>
-      <div className="gameWrapper" onMouseUp={mouseUpHandler}>
-        <p>Grid Size: </p>
-        <input
-          size={10}
-          placeholder="Row Amount"
-          value={rows}
-          onChange={rowsUpdate}
-       />
-        X
-        <input
-          size={10}
-          placeholder="Col Amount"
-          value={cols}
-          onChange={colsUpdate}
-        />
-        <button onClick={() => createBoard(rows, cols)}>
-          {" "}
-          Create Board{" "}
-        </button>
-        <div className="gameField" id="gameField" onContextMenu={prevDef}>
-          <div className="columnHint">
-            {revGameBoard.map((column, key) => (
-              <div className="colHint" key={key}>
-                {colHints[key]}
-              </div>
-            ))}
-          </div>
-          {gameBoard.map((board, key) => (
-            <div className="row" key={key}>
-              <div className="rowHint">{rowHints[key]}</div>
-              {board.grid.map((item, num) => (
-                <Square
-                  key={num}
-                  image={imageTrack[item.num - 1]}
-                  xpos={item.x}
-                  ypos={item.y}
-                  sqnum={item.num}
-                  onMouseDown={fillSelection}
-                  onContextMenu={prevDef}
-                  onMouseEnter={mouseEntry}
-                />
-              ))}
+    <div className="gameWrapper" onMouseUp={mouseUpHandler}>
+      <p>Grid Size: </p>
+      <input
+        size={10}
+        placeholder="Row Amount"
+        value={rows}
+        onChange={rowsUpdate}
+      />
+      X
+      <input
+        size={10}
+        placeholder="Col Amount"
+        value={cols}
+        onChange={colsUpdate}
+      />
+      <button onClick={() => createBoard(rows, cols)}> Create Board </button>
+      <div className="gameField" id="gameField" onContextMenu={prevDef}>
+        <div className="columnHint">
+          {revGameBoard.map((column, key) => (
+            <div className="colHint" key={key}>
+              {colHints[key]}
             </div>
           ))}
         </div>
+        {gameBoard.map((board, key) => (
+          <div className="row" key={key}>
+            <div className="rowHint">{rowHints[key]}</div>
+            {board.grid.map((item, num) => (
+              <Square
+                key={num}
+                image={imageTrack[item.num - 1]}
+                xpos={item.x}
+                ypos={item.y}
+                sqnum={item.num}
+                onMouseDown={fillSelection}
+                onContextMenu={prevDef}
+                onMouseEnter={mouseEntry}
+              />
+            ))}
+          </div>
+        ))}
       </div>
-    </Container>
+    </div>
   );
-}
+};
 
 export default Game;
