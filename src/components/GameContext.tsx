@@ -3,8 +3,8 @@ import { Cell, Grid } from "./shared/interfaces";
 interface GameContextProps {
   rows: number;
   cols: number;
-  setRows: (val: number | null) => void;
-  setCols: (val: number | null) => void;
+  setRows: (val: number) => void;
+  setCols: (val: number) => void;
   createBoard: () => void;
   filledSquares: { x: any; y: any }[];
 }
@@ -58,9 +58,9 @@ export const GameContextProvider = (props: any) => {
     setFilled(rows, cols);
 
     // Instantiate, basically
-    setGameBoard(eRow);
-    setRevGameBoard(eCol);
-    setImageTrack(imgHold);
+    // setGameBoard(eRow);
+    // setRevGameBoard(eCol);
+    // setImageTrack(imgHold);
   };
 
   const rowCheck = (val: any, rows: any, cols: any) => {

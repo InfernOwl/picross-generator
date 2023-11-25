@@ -13,14 +13,14 @@ const GameOptions = () => {
         size="small"
         value={rows}
         defaultValue={rows}
-        onChange={setRows}
+        onChange={(e) => setRows(e || 0)}
       />
       <InputNumber
         addonBefore="Column(s)"
         size="small"
         value={cols}
         defaultValue={cols}
-        onChange={setCols}
+        onChange={(e) => setCols(e || 0)}
       />
       <Button onClick={() => createBoard()}> Create Board </Button>
     </div>
