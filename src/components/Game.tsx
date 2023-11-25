@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Square from "./Square";
 import Container from "react-bootstrap/Container";
+import { Button, InputNumber } from "antd";
 
 interface Cell {
   x: number;
@@ -28,10 +29,6 @@ const Game = () => {
   const [chance, setChance] = useState<Number>(50);
   const [mouseDown, setMouseDown] = useState<boolean>(false);
   const [fillStyle, setFillStyle] = useState<string>("blank");
-
-  //   useEffect(() => {
-
-  // }, []);
 
   const createBoard = (rows: any, cols: any) => {
     // Fail if Rows or Columns are not valid
@@ -433,22 +430,21 @@ const Game = () => {
   // };
 
   return (
-    <div className="gameWrapper" onMouseUp={mouseUpHandler}>
+    <Container className="gameWrapper" onMouseUp={mouseUpHandler}>
       <p>Grid Size: </p>
-      <input
-        size={10}
-        placeholder="Row Amount"
+      <InputNumber
+        addonBefore="Row(s)"
+        size="small"
         value={rows}
         onChange={rowsUpdate}
       />
-      X
-      <input
-        size={10}
-        placeholder="Col Amount"
+      <InputNumber
+        addonBefore="Column(s)"
+        size="small"
         value={cols}
         onChange={colsUpdate}
       />
-      <button onClick={() => createBoard(rows, cols)}> Create Board </button>
+      <Button onClick={() => createBoard(rows, cols)}> Create Board </Button>
       <div className="gameField" id="gameField" onContextMenu={prevDef}>
         <div className="columnHint">
           {revGameBoard.map((column, key) => (
@@ -475,7 +471,7 @@ const Game = () => {
           </div>
         ))}
       </div>
-    </div>
+    </Container>
   );
 };
 
