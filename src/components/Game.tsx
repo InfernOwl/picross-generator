@@ -8,7 +8,7 @@ const Game = () => {
   return (
     <GameContextProvider>
       <Container className="gameWrapper">
-        <GameOptions createBoard={createBoard} />
+        <GameOptions />
         <GameBoard />
       </Container>
     </GameContextProvider>

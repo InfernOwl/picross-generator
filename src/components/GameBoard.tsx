@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Square from "./Square";
 import { Cell, Grid } from "./shared/interfaces";
 import { GameContext } from "./GameContext";
@@ -6,8 +6,7 @@ import { GameContext } from "./GameContext";
 export interface GameBoardProps {}
 
 const GameBoard = (props: GameBoardProps) => {
-  const createBoard = () => {
-  const { rows, cols,  } = useContext(GameContext);
+  const { rows, cols, createBoard, filledSquares } = useContext(GameContext);
 
   const [colHints, setColHints] = useState<any[]>([]);
   const [rowHints, setRowHints] = useState<any[]>([]);
@@ -15,192 +14,29 @@ const GameBoard = (props: GameBoardProps) => {
   const [gameBoard, setGameBoard] = useState<Grid[]>([]);
   const [revGameBoard, setRevGameBoard] = useState<Grid[]>([]);
   const [imageTrack, setImageTrack] = useState<any[]>([]);
-
   const [fillStyle, setFillStyle] = useState<string>("blank");
-  const [filledSquares, setFilledSquares] = useState<{ x: any; y: any }[]>([]);
   const [selectedSquares, setSelectedSquares] = useState<{ x: any; y: any }[]>(
     []
   );
 
-  const createBoard = () => {
-    // Hard reset of all parameters on board creation
-    setGameBoard([]);
-    setRevGameBoard([]);
-    setImageTrack([]);
-    setColHints([]);
-    setRowHints([]);
-    setFilledSquares([]);
-    setSelectedSquares([]);
-    setFillStyle("blank");
-
-    // For x amount of rows and y amount of cols create a grid to match
-    // where each grid item has a Square object
-    var eRow: Grid[] = [];
-    var eCol: Grid[] = [];
-
-    // Create imageTracking list for filled and unfilled squares
-    var imgHold: any[] = [];
-    var i = 1;
-
-    for (var x = 1; x <= rows; x++) {
-      var element: Cell[] = [];
-      for (var y = 1; y <= cols; y++) {
-        element.push({ x: x, y: y, num: i });
-        imgHold.push("empty");
-        i++;
-      }
-
-      eRow.push({ grid: element });
-    }
-
-    // Create a reversed board for the column hints
-    for (var t = 1; t <= cols; t++) {
-      var colElement: Cell[] = [];
-      for (var u = 1; u <= rows; u++) {
-        colElement.push({ x: u, y: t, num: i });
-        imgHold.push("empty");
-        i++;
-      }
-
-      eCol.push({ grid: colElement });
-    }
-
-    // Board is created now randomly choose which squares get filled
-    setFilled(rows, cols);
+  useEffect(() => {
+    clearState();
 
     // Set hint values
     setTimeout(() => {
       setHints(filledSquares, rows, cols);
     }, 1000);
+  }, []);
 
-    // Instantiate, basically
-    setGameBoard(eRow);
-    setRevGameBoard(eCol);
-    setImageTrack(imgHold);
+  const clearState = () => {
+    setGameBoard([]);
+    setRevGameBoard([]);
+    setImageTrack([]);
+    setColHints([]);
+    setRowHints([]);
+    setFillStyle("blank");
+    setSelectedSquares([]);
   };
-
-  const rowCheck = (val: any, rows: any, cols: any) => {
-    for (var i = 1; i <= rows; i++) {
-      if (val <= cols * i) {
-        return i;
-      }
-    }
-  };
-
-  const colCheck = (val: any, cols: any) => {
-    if (val % cols === 0) {
-      return parseInt(cols);
-    } else {
-      return val % cols;
-    }
-  };
-
-  const setFilled = (rows: any, cols: any) => {
-    var totalCount = rows * cols;
-
-    for (var i = 1; i <= totalCount; i++) {
-      var rand = 1 + Math.random() * (100 - 1);
-
-      if (rand > 50) {
-        filledSquares.push({
-          x: rowCheck(i, rows, cols),
-          y: colCheck(i, cols),
-        });
-      }
-    }
-
-    setFilledSquares(filledSquares);
-  };
-
-  const setHintR = (arr: any, rows: any, cols: any): any[] => {
-    var hint = "";
-    var hintArr: String[] = [];
-    var count = 0;
-    var found = false;
-
-    // Set rowHints first
-    for (var i = 1; i <= rows; i++) {
-      count = 0;
-      found = false;
-      hint = "";
-      hintArr = rowHints;
-
-      for (var j = 1; j <= cols; j++) {
-        found = false;
-
-        for (var k = 0; k < arr.length; k++) {
-          if (i === arr[k].x && j === arr[k].y) {
-            found = true;
-            count++;
-          }
-        }
-
-        if (!found || j === cols) {
-          if (count > 0) {
-            hint = hint + count;
-            count = 0;
-          }
-        }
-
-        if (hint === "" && j === cols && !found) {
-          hint = "0";
-        }
-      }
-
-      hintArr.push(hint);
-    }
-
-    return hintArr;
-  };
-  const setHintsC = (arr: any, rows: any, cols: any) => {
-    var hint = "";
-    var hintArr: String[] = [];
-    var count = 0;
-    var found = false;
-
-    // Set colHints second
-    for (var j = 1; j <= cols; j++) {
-      count = 0;
-      found = false;
-      hint = "";
-      hintArr = colHints;
-
-      for (var i = 1; i <= rows; i++) {
-        found = false;
-
-        for (var k = 0; k < arr.length; k++) {
-          if (i === arr[k].x && j === arr[k].y) {
-            found = true;
-            count++;
-          }
-        }
-
-        if (!found || i === rows) {
-          if (count > 0) {
-            hint = hint + count;
-            count = 0;
-          }
-        }
-
-        if (hint === "" && i === rows && !found) {
-          hint = "0";
-        }
-      }
-
-      hintArr.push(hint);
-    }
-
-    return hintArr;
-  };
-
-  const setHints = (filledArr: any, rows: any, cols: any) => {
-    // Iterate through filledArr and create colHint array and rowHint array to pass to state
-    setRowHints(setHintR(filledArr, rows, cols));
-
-    setColHints(setHintsC(filledArr, rows, cols));
-  };
-
-  const {} = props;
 
   const prevDef = (e: any) => {
     e.preventDefault();
@@ -370,6 +206,95 @@ const GameBoard = (props: GameBoardProps) => {
       default:
         break;
     }
+  };
+
+  const setHints = (filledArr: any, rows: any, cols: any) => {
+    // Iterate through filledArr and create colHint array and rowHint array to pass to state
+    setRowHints(setHintR(filledArr, rows, cols));
+
+    setColHints(setHintsC(filledArr, rows, cols));
+  };
+
+  const setHintR = (arr: any, rows: any, cols: any): any[] => {
+    var hint = "";
+    var hintArr: String[] = [];
+    var count = 0;
+    var found = false;
+
+    // Set rowHints first
+    for (var i = 1; i <= rows; i++) {
+      count = 0;
+      found = false;
+      hint = "";
+      hintArr = rowHints;
+
+      for (var j = 1; j <= cols; j++) {
+        found = false;
+
+        for (var k = 0; k < arr.length; k++) {
+          if (i === arr[k].x && j === arr[k].y) {
+            found = true;
+            count++;
+          }
+        }
+
+        if (!found || j === cols) {
+          if (count > 0) {
+            hint = hint + count;
+            count = 0;
+          }
+        }
+
+        if (hint === "" && j === cols && !found) {
+          hint = "0";
+        }
+      }
+
+      hintArr.push(hint);
+    }
+
+    return hintArr;
+  };
+
+  const setHintsC = (arr: any, rows: any, cols: any) => {
+    var hint = "";
+    var hintArr: String[] = [];
+    var count = 0;
+    var found = false;
+
+    // Set colHints second
+    for (var j = 1; j <= cols; j++) {
+      count = 0;
+      found = false;
+      hint = "";
+      hintArr = colHints;
+
+      for (var i = 1; i <= rows; i++) {
+        found = false;
+
+        for (var k = 0; k < arr.length; k++) {
+          if (i === arr[k].x && j === arr[k].y) {
+            found = true;
+            count++;
+          }
+        }
+
+        if (!found || i === rows) {
+          if (count > 0) {
+            hint = hint + count;
+            count = 0;
+          }
+        }
+
+        if (hint === "" && i === rows && !found) {
+          hint = "0";
+        }
+      }
+
+      hintArr.push(hint);
+    }
+
+    return hintArr;
   };
 
   return (
