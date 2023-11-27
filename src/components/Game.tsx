@@ -16,9 +16,9 @@ const Game = () => {
     []
   );
 
-  const [imageTrack, setImageTrack] = useState<any[]>([]);
-  const [colHints, setColHints] = useState<any[]>([]);
-  const [rowHints, setRowHints] = useState<any[]>([]);
+  const [imageTrack, setImageTrack] = useState<string[]>([]);
+  const [colHints, setColHints] = useState<String[]>([]);
+  const [rowHints, setRowHints] = useState<String[]>([]);
   const [fillStyle, setFillStyle] = useState<string>("blank");
 
   useEffect(() => {
@@ -26,6 +26,7 @@ const Game = () => {
     setRowHints([]);
     setSelectedSquares([]);
     setFillStyle("blank");
+    console.log(colHints);
 
     // Set hint values
     setTimeout(() => {
@@ -34,36 +35,35 @@ const Game = () => {
   }, [gameBoard]);
 
   const mouseEntry = (e: any) => {
-    const sqNum = parseInt(e.target.attributes["data-sqnum"].value);
-    const xpos = parseInt(e.target.attributes["data-xpos"].value);
-    const ypos = parseInt(e.target.attributes["data-ypos"].value);
-
-    // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
-    switch (fillStyle) {
-      case "fill":
-        if (
-          imageTrack[sqNum - 1] === "empty" ||
-          imageTrack[sqNum - 1] === "X"
-        ) {
-          setSelected(xpos, ypos, sqNum);
-        }
-        break;
-      case "x":
-        if (imageTrack[sqNum - 1] === "empty") {
-          setXMark(xpos, ypos, sqNum);
-        }
-        break;
-      case "empty":
-        if (
-          imageTrack[sqNum - 1] === "filled" ||
-          imageTrack[sqNum - 1] === "X"
-        ) {
-          setEmpty(xpos, ypos, sqNum);
-        }
-        break;
-      default:
-        break;
-    }
+    // const sqNum = parseInt(e.target.attributes["data-sqnum"].value);
+    // const xpos = parseInt(e.target.attributes["data-xpos"].value);
+    // const ypos = parseInt(e.target.attributes["data-ypos"].value);
+    // // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
+    // switch (fillStyle) {
+    //   case "fill":
+    //     if (
+    //       imageTrack[sqNum - 1] === "empty" ||
+    //       imageTrack[sqNum - 1] === "X"
+    //     ) {
+    //       setSelected(xpos, ypos, sqNum);
+    //     }
+    //     break;
+    //   case "x":
+    //     if (imageTrack[sqNum - 1] === "empty") {
+    //       setXMark(xpos, ypos, sqNum);
+    //     }
+    //     break;
+    //   case "empty":
+    //     if (
+    //       imageTrack[sqNum - 1] === "filled" ||
+    //       imageTrack[sqNum - 1] === "X"
+    //     ) {
+    //       setEmpty(xpos, ypos, sqNum);
+    //     }
+    //     break;
+    //   default:
+    //     break;
+    // }
   };
 
   const prevDef = (e: any) => {
