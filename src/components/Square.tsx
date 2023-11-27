@@ -1,5 +1,7 @@
 import React from "react";
-import { EMPTY_SQUARE, FILLED_SQUARE, FILLED_X } from "../assets/svgAssets";
+import EMPTY_SQUARE from "../assets/iconmonstr-square-4.svg";
+import FILLED_SQUARE from "../assets/iconmonstr-square-1.svg";
+import FILLED_X from "../assets/iconmonstr-x-mark-1.svg";
 
 export interface SquareProps {
   // draggable:boolean;
@@ -7,9 +9,9 @@ export interface SquareProps {
   xpos: any;
   ypos: any;
   sqnum: any;
-  onMouseDown: (e: React.MouseEvent<HTMLImageElement>) => void;
-  onContextMenu: (e: React.MouseEvent<HTMLImageElement>) => void;
-  onMouseEnter: (e: React.MouseEvent<HTMLImageElement>) => void;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onContextMenu: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const Square = (props: SquareProps) => {
@@ -33,6 +35,7 @@ const Square = (props: SquareProps) => {
         break;
     }
 
+    console.log(newImage);
     return newImage;
   };
 
