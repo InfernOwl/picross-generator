@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import EMPTY_SQUARE from "../assets/iconmonstr-square-4.svg";
 import FILLED_SQUARE from "../assets/iconmonstr-square-1.svg";
 import FILLED_X from "../assets/iconmonstr-x-mark-1.svg";
@@ -18,30 +18,28 @@ const Square = (props: SquareProps) => {
   const { image, xpos, ypos, sqnum, onMouseDown, onContextMenu, onMouseEnter } =
     props;
 
-  const imageSelect = (image: string) => {
-    let newImage;
+  const [square, setSquare] = useState(EMPTY_SQUARE);
 
+  useEffect(() => {
     switch (image) {
       case "empty":
-        newImage = EMPTY_SQUARE;
+        setSquare(EMPTY_SQUARE);
         break;
       case "filled":
-        newImage = FILLED_SQUARE;
+        setSquare(FILLED_SQUARE);
         break;
       case "X":
-        newImage = FILLED_X;
+        setSquare(FILLED_X);
         break;
       default:
         break;
     }
-
-    return newImage;
-  };
+  }, [image]);
 
   return (
     <img
       draggable="false"
-      src={imageSelect(image)}
+      src={square}
       alt=""
       className="Test"
       data-xpos={xpos}
@@ -50,6 +48,7 @@ const Square = (props: SquareProps) => {
       onMouseDown={(e) => onMouseDown(e)}
       onContextMenu={(e) => onContextMenu(e)}
       onMouseEnter={(e) => onMouseEnter(e)}
+      style={{ width: "24px", height: "24px", padding: "1px" }}
     />
   );
 };

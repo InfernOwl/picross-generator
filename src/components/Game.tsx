@@ -34,46 +34,31 @@ const Game = () => {
   }, [gameBoard]);
 
   const mouseEntry = (e: any) => {
+    const sqNum = parseInt(e.target.attributes["data-sqnum"].value);
+    const xpos = parseInt(e.target.attributes["data-xpos"].value);
+    const ypos = parseInt(e.target.attributes["data-ypos"].value);
+
     // Decide if a square is filled, emptied, or X'd on mouse entry by what the fillStyle is
     switch (fillStyle) {
       case "fill":
         if (
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-            "empty" ||
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-            "X"
+          imageTrack[sqNum - 1] === "empty" ||
+          imageTrack[sqNum - 1] === "X"
         ) {
-          setSelected(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+          setSelected(xpos, ypos, sqNum);
         }
         break;
       case "x":
-        if (
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-          "empty"
-        ) {
-          setXMark(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+        if (imageTrack[sqNum - 1] === "empty") {
+          setXMark(xpos, ypos, sqNum);
         }
         break;
       case "empty":
         if (
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-            "filled" ||
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-            "X"
+          imageTrack[sqNum - 1] === "filled" ||
+          imageTrack[sqNum - 1] === "X"
         ) {
-          setEmpty(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+          setEmpty(xpos, ypos, sqNum);
         }
         break;
       default:
@@ -102,7 +87,10 @@ const Game = () => {
   };
 
   const fillSelection = (e: any) => {
-    console.log(e);
+    const sqNum = parseInt(e.target.attributes["data-sqnum"].value);
+    const xpos = parseInt(e.target.attributes["data-xpos"].value);
+    const ypos = parseInt(e.target.attributes["data-ypos"].value);
+
     // Decide what is done when a square is clicked based on what mouse button was pressed
     // Then set fillstyle to be used for drag selection while mouse button remains down
     var mouseState = e.buttons;
@@ -110,42 +98,20 @@ const Game = () => {
 
     switch (mouseState) {
       case 1:
-        if (
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-          "empty"
-        ) {
-          setSelected(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+        if (imageTrack[sqNum - 1] === "empty") {
+          setSelected(xpos, ypos, sqNum);
           setFillStyle("fill");
         } else {
-          setEmpty(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+          setEmpty(xpos, ypos, sqNum);
           setFillStyle("empty");
         }
         break;
       case 2:
-        if (
-          imageTrack[parseInt(e.target.attributes["data-sqnum"].value) - 1] ===
-          "empty"
-        ) {
-          setXMark(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+        if (imageTrack[sqNum - 1] === "empty") {
+          setXMark(xpos, ypos, sqNum);
           setFillStyle("x");
         } else {
-          setEmpty(
-            parseInt(e.target.attributes["data-xpos"].value),
-            parseInt(e.target.attributes["data-ypos"].value),
-            parseInt(e.target.attributes["data-sqnum"].value)
-          );
+          setEmpty(xpos, ypos, sqNum);
 
           setFillStyle("empty");
         }

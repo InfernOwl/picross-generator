@@ -1,6 +1,5 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 import { Button, InputNumber } from "antd";
-import { GameContext } from "./GameContext";
 
 interface GameOptionsProps {
   rows: number;
@@ -10,7 +9,7 @@ interface GameOptionsProps {
   createBoard: (rows: number, cols: number) => void;
 }
 const GameOptions = (props: GameOptionsProps) => {
-  const { rows, cols, setRows, setCols,createBoard } = props;
+  const { rows, cols, setRows, setCols, createBoard } = props;
   return (
     <div>
       <p>Grid Size: </p>
