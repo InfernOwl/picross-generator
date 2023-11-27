@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import React from "react";
 import Square from "./Square";
-import { GameContext } from "./GameContext";
-import { Cell, Grid } from "./shared/interfaces";
+import { Grid } from "./shared/interfaces";
 
 export interface GameBoardProps {
   gameBoard: Grid[];

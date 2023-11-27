@@ -15,18 +15,14 @@ const Game = () => {
   const [selectedSquares, setSelectedSquares] = useState<{ x: any; y: any }[]>(
     []
   );
-
-  const [imageTrack, setImageTrack] = useState<string[]>([]);
   const [colHints, setColHints] = useState<String[]>([]);
   const [rowHints, setRowHints] = useState<String[]>([]);
+
   const [fillStyle, setFillStyle] = useState<string>("blank");
+  const [imageTrack, setImageTrack] = useState<string[]>([]);
 
   useEffect(() => {
-    setColHints([]);
-    setRowHints([]);
-    setSelectedSquares([]);
     setFillStyle("blank");
-    console.log(colHints);
 
     // Set hint values
     setTimeout(() => {
@@ -91,6 +87,7 @@ const Game = () => {
     const xpos = parseInt(e.target.attributes["data-xpos"].value);
     const ypos = parseInt(e.target.attributes["data-ypos"].value);
 
+    console.log(`fillselection: ${imageTrack}`);
     // Decide what is done when a square is clicked based on what mouse button was pressed
     // Then set fillstyle to be used for drag selection while mouse button remains down
     var mouseState = e.buttons;
@@ -112,7 +109,6 @@ const Game = () => {
           setFillStyle("x");
         } else {
           setEmpty(xpos, ypos, sqNum);
-
           setFillStyle("empty");
         }
         break;

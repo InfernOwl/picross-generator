@@ -45,7 +45,10 @@ const Square = (props: SquareProps) => {
       data-xpos={xpos}
       data-ypos={ypos}
       data-sqnum={sqnum}
-      onMouseDown={(e) => onMouseDown(e)}
+      onMouseDown={(e) => {
+        console.log(e);
+        return onMouseDown(e);
+      }}
       onContextMenu={(e) => onContextMenu(e)}
       onMouseEnter={(e) => onMouseEnter(e)}
       style={{ width: "24px", height: "24px", padding: "1px" }}

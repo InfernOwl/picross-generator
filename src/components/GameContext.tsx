@@ -1,5 +1,4 @@
-import React, { Dispatch, SetStateAction, useState } from "react";
-import { Cell, Grid } from "./shared/interfaces";
+import React from "react";
 interface GameContextProps {
   createBoard: (rows: number, columns: number) => void;
   rows: number;
