@@ -35,7 +35,6 @@ const Square = (props: SquareProps) => {
         break;
     }
 
-    console.log(newImage);
     return newImage;
   };
 

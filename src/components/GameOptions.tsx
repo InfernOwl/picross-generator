@@ -2,10 +2,15 @@ import React, { useContext, useState } from "react";
 import { Button, InputNumber } from "antd";
 import { GameContext } from "./GameContext";
 
-const GameOptions = () => {
-  const { createBoard } = useContext(GameContext);
-  const [rows, setRows] = useState<number>(0);
-  const [cols, setCols] = useState<number>(0);
+interface GameOptionsProps {
+  rows: number;
+  cols: number;
+  setRows: (val: number) => void;
+  setCols: (val: number) => void;
+  createBoard: (rows: number, cols: number) => void;
+}
+const GameOptions = (props: GameOptionsProps) => {
+  const { rows, cols, setRows, setCols,createBoard } = props;
   return (
     <div>
       <p>Grid Size: </p>

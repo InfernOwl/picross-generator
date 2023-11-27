@@ -1,26 +1,33 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Square from "./Square";
 import { GameContext } from "./GameContext";
+import { Cell, Grid } from "./shared/interfaces";
 
-export interface GameBoardProps {}
+export interface GameBoardProps {
+  gameBoard: Grid[];
+  revGameBoard: Grid[];
+  colHints: any;
+  rowHints: any;
+  onMouseDown: any;
+  onContextMenu: any;
+  onMouseEnter: any;
+  imageTrack: any;
+}
 
 const GameBoard = (props: GameBoardProps) => {
   const {
     gameBoard,
     revGameBoard,
-    imageTrack,
-    fillSelection,
-    mouseEntry,
     colHints,
     rowHints,
-  } = useContext(GameContext);
-
-  const prevDef = (e: any) => {
-    e.preventDefault();
-  };
+    onMouseDown,
+    onContextMenu,
+    onMouseEnter,
+    imageTrack,
+  } = props;
 
   return (
-    <div className="gameField" id="gameField" onContextMenu={prevDef}>
+    <div className="gameField" id="gameField" onContextMenu={onContextMenu}>
       <div className="columnHint">
         {revGameBoard.map((column, key) => (
           <div className="colHint" key={key}>
@@ -32,8 +39,6 @@ const GameBoard = (props: GameBoardProps) => {
         <div className="row" key={key}>
           <div className="rowHint">{rowHints[key]}</div>
           {board.grid.map((item, num) => {
-            console.log(item);
-            console.log(imageTrack);
             return (
               <Square
                 key={num}
@@ -41,9 +46,9 @@ const GameBoard = (props: GameBoardProps) => {
                 xpos={item.x}
                 ypos={item.y}
                 sqnum={item.num}
-                onMouseDown={fillSelection}
-                onContextMenu={prevDef}
-                onMouseEnter={mouseEntry}
+                onMouseDown={onMouseDown}
+                onContextMenu={onContextMenu}
+                onMouseEnter={onMouseEnter}
               />
             );
           })}
