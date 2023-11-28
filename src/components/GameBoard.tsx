@@ -41,7 +41,7 @@ const GameBoard = (props: GameBoardProps) => {
             return (
               <Square
                 key={num}
-                image={imageTrack[item.num]}
+                fillstyle={imageTrack[item.num]}
                 xpos={item.x}
                 ypos={item.y}
                 sqnum={item.num}

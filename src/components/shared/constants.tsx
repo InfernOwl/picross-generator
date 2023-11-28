@@ -1,5 +1,5 @@
 export enum FillStyle {
-  FILL = "fill",
+  FILLED = "filled",
   EMPTY = "empty",
   X = "x",
 }

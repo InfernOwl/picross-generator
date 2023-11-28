@@ -7,3 +7,8 @@ export interface Cell {
 export interface Grid {
   grid: Cell[];
 }
+
+export interface SquarePosition {
+  x: any;
+  y: any;
+}
