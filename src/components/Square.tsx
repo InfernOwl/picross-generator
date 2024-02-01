@@ -1,53 +1,62 @@
-import React from "react";
-import { EMPTY_SQUARE, FILLED_SQUARE, FILLED_X } from "../assets/svgAssets";
+import React, { useEffect, useState } from "react";
+import EMPTY_SQUARE from "../assets/iconmonstr-square-4.svg";
+import FILLED_SQUARE from "../assets/iconmonstr-square-1.svg";
+import FILLED_X from "../assets/iconmonstr-x-mark-1.svg";
+import { FillStyle } from "./shared/constants";
 
 export interface SquareProps {
   // draggable:boolean;
-  image: string;
+  fillstyle: FillStyle;
   xpos: any;
   ypos: any;
   sqnum: any;
-  onMouseDown: (e: React.MouseEvent<HTMLImageElement>) => void;
-  onContextMenu: (e: React.MouseEvent<HTMLImageElement>) => void;
-  onMouseEnter: (e: React.MouseEvent<HTMLImageElement>) => void;
+  onMouseDown: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onContextMenu: (e: React.MouseEvent<HTMLDivElement>) => void;
+  onMouseEnter: (e: React.MouseEvent<HTMLDivElement>) => void;
 }
 
 const Square = (props: SquareProps) => {
-  const { image, xpos, ypos, sqnum, onMouseDown, onContextMenu, onMouseEnter } =
-    props;
+  const {
+    xpos,
+    ypos,
+    sqnum,
+    fillstyle,
+    onMouseDown,
+    onContextMenu,
+    onMouseEnter,
+  } = props;
 
-  const imageSelect = (image: string) => {
-    let newImage;
+  const [square, setSquare] = useState(EMPTY_SQUARE);
 
-    switch (image) {
-      case "empty":
-        newImage = EMPTY_SQUARE;
+  useEffect(() => {
+    switch (fillstyle) {
+      case FillStyle.EMPTY:
+        setSquare(EMPTY_SQUARE);
         break;
-      case "filled":
-        newImage = FILLED_SQUARE;
+      case FillStyle.FILLED:
+        setSquare(FILLED_SQUARE);
         break;
-      case "X":
-        newImage = FILLED_X;
+      case FillStyle.X:
+        setSquare(FILLED_X);
         break;
       default:
         break;
     }
-
-    return newImage;
-  };
+  }, [fillstyle]);
 
   return (
     <img
-      draggable="false"
-      src={imageSelect(image)}
       alt=""
+      src={square}
       className="Test"
+      draggable="false"
       data-xpos={xpos}
       data-ypos={ypos}
       data-sqnum={sqnum}
       onMouseDown={(e) => onMouseDown(e)}
       onContextMenu={(e) => onContextMenu(e)}
       onMouseEnter={(e) => onMouseEnter(e)}
+      style={{ width: "24px", height: "24px", padding: "1px" }}
     />
   );
 };
